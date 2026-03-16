@@ -168,21 +168,19 @@ Started Instances: ['i-789012']
 # Screenshots
 
 ## EC2 Instances Created
-
 ![EC2 Instances](screenshots/ec2-instances.png)
 
 ## Lambda Function Created
-
 ![Lambda Function](screenshots/lambda-code.png)
 
 ## Lambda Test Event
-
 ![Lambda Test Event](screenshots/lambda-test.png)
 
 ## EC2 Instance State Change
-
 ![Execution Result](screenshots/ec2-result.png)
 
+## CloudWatch Logs
+![CloudWatch Logs](screenshots/cloudwatch-logs.png)
 Result
 
 The AWS Lambda function successfully automated EC2 instance management by detecting instance tags and performing start or stop operations accordingly.
