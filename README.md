@@ -173,15 +173,15 @@ Started Instances: ['i-789012']
 
 ## Lambda Function Created
 
-![Lambda Function](screenshots/lambda-function.png)
+![Lambda Function](screenshots/lambda-code.png)
 
 ## Lambda Test Event
 
-![Lambda Test Event](screenshots/test-event.png)
+![Lambda Test Event](screenshots/lamda-test.png)
 
 ## EC2 Instance State Change
 
-![Execution Result](screenshots/result-output.png)
+![Execution Result](screenshots/ec2-result.png)
 
 Result
 
