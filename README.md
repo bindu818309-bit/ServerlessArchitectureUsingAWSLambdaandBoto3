@@ -224,7 +224,7 @@ This role allows the Lambda function to:
 - Delete objects from the bucket  
 
 ## 📸 IAM Role
-![IAM](images/iam-role.png)
+![IAM](screenshots/iam-role.png)
 
 ---
 
@@ -274,7 +274,7 @@ def lambda_handler(event, context):
     }
 
 ## 📸 Lambda Logs
-![Logs](images/lambda-logs.png)
+![Logs](screenshots/lambda-logs.png)
 
 ## 📸 S3 Bucket After Deletion
-![After](images/after.png)
+![After](screenshots/after.png)
