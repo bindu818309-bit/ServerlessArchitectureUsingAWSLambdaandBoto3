@@ -188,3 +188,93 @@ The AWS Lambda function successfully automated EC2 instance management by detect
 Conclusion
 
 This assignment demonstrated how serverless computing using AWS Lambda combined with Boto3 can automate infrastructure management tasks efficiently. Tag-based automation allows better control and reduces manual intervention in cloud environments.
+
+
+
+
+
+# Assignment 2: Automated S3 Bucket Cleanup Using AWS Lambda and Boto3
+
+## 📌 Objective
+The objective of this assignment is to automate the deletion of files older than 30 days in an Amazon S3 bucket using AWS Lambda and Boto3.
+
+---
+
+## 🪣 S3 Bucket Setup
+An S3 bucket named **my-cleanup-bucket-hero** was created.
+
+Multiple files were uploaded into the bucket, including:
+- Python files (`.py`)
+- Text files (`.txt`)
+
+Some files were used to simulate older data for testing the cleanup process.
+
+## 📸 Before Deletion
+![Before](screenshots/before.png)
+
+
+## 🔐 IAM Role Configuration
+An IAM role was created for the Lambda function.
+
+- Role Type: AWS Service → Lambda  
+- Permissions Policy: `AmazonS3FullAccess`  
+
+This role allows the Lambda function to:
+- List objects in the S3 bucket  
+- Delete objects from the bucket  
+
+## 📸 IAM Role
+![IAM](images/iam-role.png)
+
+---
+
+## ⚙️ Lambda Function Implementation
+
+A Lambda function was created using **Python 3.x runtime**.
+
+### 🔧 Function Code
+
+```python
+import boto3
+from datetime import datetime, timezone, timedelta
+
+s3 = boto3.client('s3')
+
+BUCKET_NAME = 'my-cleanup-bucket-hero'
+DAYS_OLD = 2  # Adjusted for testing
+
+def lambda_handler(event, context):
+    cutoff_date = datetime.now(timezone.utc) - timedelta(days=DAYS_OLD)
+
+    response = s3.list_objects_v2(Bucket=BUCKET_NAME)
+
+    if 'Contents' not in response:
+        print("No objects found.")
+        return
+
+    deleted_files = []
+
+    for obj in response['Contents']:
+        file_name = obj['Key']
+        last_modified = obj['LastModified']
+
+        if last_modified < cutoff_date:
+            s3.delete_object(Bucket=BUCKET_NAME, Key=file_name)
+            deleted_files.append(file_name)
+            print(f"Deleted: {file_name}")
+
+    if not deleted_files:
+        print("No files deleted.")
+    else:
+        print(f"Deleted {len(deleted_files)} files.")
+
+    return {
+        'statusCode': 200,
+        'body': f"Deleted {len(deleted_files)} files"
+    }
+
+## 📸 Lambda Logs
+![Logs](images/lambda-logs.png)
+
+## 📸 S3 Bucket After Deletion
+![After](images/after.png)
