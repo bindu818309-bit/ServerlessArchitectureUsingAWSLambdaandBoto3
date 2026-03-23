@@ -1,9 +1,13 @@
+# Serverless Architecture Using AWS Lambda and Boto3
+
+---
+
 # Assignment 1: Automated Instance Management Using AWS Lambda and Boto3
 
 ## Objective
 The objective of this assignment is to gain hands-on experience with **AWS Lambda** and **Boto3** by automating the start and stop operations of **EC2 instances** based on instance tags.
 
-Technologies used:
+**Technologies used:**
 - Amazon EC2
 - AWS Lambda
 - IAM (Identity and Access Management)
@@ -11,92 +15,62 @@ Technologies used:
 
 ---
 
-# Architecture Overview
+## Architecture Overview
 
 Event Trigger → AWS Lambda → Boto3 → EC2 Instance Management
 
 Lambda checks EC2 tags and performs the following:
 
-- Instances tagged **Auto-Stop** → Stop instance
+- Instances tagged **Auto-Stop** → Stop instance  
 - Instances tagged **Auto-Start** → Start instance
 
 ---
 
-# Step 1: EC2 Instance Setup
+## Step 1: EC2 Instance Setup
 
-1. Login to AWS Management Console
-2. Navigate to **EC2 Dashboard**
+1. Login to AWS Management Console  
+2. Navigate to **EC2 Dashboard**  
 3. Launch two instances with the following configuration:
 
-Instance Type:
-
-t2.micro
-
+**Instance Type:** t2.micro
 
 ### Instance 1 Tag
-
-| Key | Value |
-|----|----|
+| Key    | Value     |
+|--------|-----------|
 | Action | Auto-Stop |
 
 ### Instance 2 Tag
-
-| Key | Value |
-|----|----|
+| Key    | Value     |
+|--------|-----------|
 | Action | Auto-Start |
 
 ---
 
-# Step 2: Create IAM Role for Lambda
+## Step 2: Create IAM Role for Lambda
 
-1. Open IAM Dashboard
-2. Click **Roles**
-3. Select **Create Role**
-4. Choose trusted entity:
-
-
-AWS Service → Lambda
-
-
-Attach policy:
-
-
-AmazonEC2FullAccess
-
-
-Role name:
-
-
-LambdaEC2ManagementRole
-
+1. Open IAM Dashboard  
+2. Click **Roles** → **Create Role**  
+3. Choose trusted entity: AWS Service → Lambda  
+4. Attach policy: **AmazonEC2FullAccess**  
+5. Role name: `LambdaEC2ManagementRole`
 
 ---
 
-# Step 3: Create Lambda Function
+## Step 3: Create Lambda Function
 
-1. Navigate to **AWS Lambda**
-2. Click **Create Function**
+1. Navigate to **AWS Lambda** → **Create Function**  
 
-Configuration:
+**Configuration:**
 
-Function Name
-
-ec2-auto-manager
-
-
-Runtime
-
-Python 3.x
-
-
-Execution Role
-
-LambdaEC2ManagementRole
-
+| Property       | Value                     |
+|----------------|---------------------------|
+| Function Name  | ec2-auto-manager          |
+| Runtime        | Python 3.x                |
+| Execution Role | LambdaEC2ManagementRole   |
 
 ---
 
-# Step 4: Lambda Python Code
+## Step 4: Lambda Python Code
 
 ```python
 import boto3
@@ -137,22 +111,13 @@ def lambda_handler(event, context):
     }
 Step 5: Create Test Event
 
-Create a test event in Lambda.
+Event Name: TestEvent
 
-Event Name:
+Event JSON: {}
 
-TestEvent
-
-Event JSON:
-
-{}
-
-Click Test to execute the function.
+Click Test to execute the function
 
 Step 6: Verify Results
-
-Go to EC2 Dashboard and verify:
-
 Tag	Expected Result
 Auto-Stop	Instance Stops
 Auto-Start	Instance Starts
@@ -164,23 +129,17 @@ Example log output:
 
 Stopped Instances: ['i-123456']
 Started Instances: ['i-789012']
+📸 Screenshots
+EC2 Instances Created
 
-# Screenshots
+Lambda Function Created
 
-## EC2 Instances Created
-![EC2 Instances](screenshots/ec2-instances.png)
+Lambda Test Event
 
-## Lambda Function Created
-![Lambda Function](screenshots/lambda-code.png)
+EC2 Instance State Change
 
-## Lambda Test Event
-![Lambda Test Event](screenshots/lambda-test.png)
+CloudWatch Logs
 
-## EC2 Instance State Change
-![Execution Result](screenshots/ec2-result.png)
-
-## CloudWatch Logs
-![CloudWatch Logs](screenshots/cloudwatch-logs.png)
 Result
 
 The AWS Lambda function successfully automated EC2 instance management by detecting instance tags and performing start or stop operations accordingly.
@@ -189,52 +148,46 @@ Conclusion
 
 This assignment demonstrated how serverless computing using AWS Lambda combined with Boto3 can automate infrastructure management tasks efficiently. Tag-based automation allows better control and reduces manual intervention in cloud environments.
 
+Assignment 2: Automated S3 Bucket Cleanup Using AWS Lambda and Boto3
+📌 Objective
 
-
-
-
-# Assignment 2: Automated S3 Bucket Cleanup Using AWS Lambda and Boto3
-
-## 📌 Objective
 The objective of this assignment is to automate the deletion of files older than 30 days in an Amazon S3 bucket using AWS Lambda and Boto3.
 
----
+🪣 S3 Bucket Setup
 
-## 🪣 S3 Bucket Setup
-An S3 bucket named **my-cleanup-bucket-hero** was created.
+An S3 bucket named my-cleanup-bucket-hero was created.
 
 Multiple files were uploaded into the bucket, including:
-- Python files (`.py`)
-- Text files (`.txt`)
+
+Python files (.py)
+
+Text files (.txt)
 
 Some files were used to simulate older data for testing the cleanup process.
 
-## 📸 Before Deletion
-![Before](screenshots/before.png)
+📸 Before Deletion
 
+🔐 IAM Role Configuration
 
-## 🔐 IAM Role Configuration
-An IAM role was created for the Lambda function.
+An IAM role was created for the Lambda function:
 
-- Role Type: AWS Service → Lambda  
-- Permissions Policy: `AmazonS3FullAccess`  
+Role Type: AWS Service → Lambda
+
+Permissions Policy: AmazonS3FullAccess
 
 This role allows the Lambda function to:
-- List objects in the S3 bucket  
-- Delete objects from the bucket  
 
-## 📸 IAM Role
-![IAM](screenshots/iam-role.png)
+List objects in the S3 bucket
 
----
+Delete objects from the bucket
 
-## ⚙️ Lambda Function Implementation
+📸 IAM Role
 
-A Lambda function was created using **Python 3.x runtime**.
+⚙️ Lambda Function Implementation
 
-### 🔧 Function Code
+A Lambda function was created using Python 3.x runtime.
 
-```python
+🔧 Function Code
 import boto3
 from datetime import datetime, timezone, timedelta
 
@@ -272,9 +225,14 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': f"Deleted {len(deleted_files)} files"
     }
+📸 Lambda Logs
 
-## 📸 Lambda Logs
-![Logs](screenshots/lambda-logs.png)
+📸 S3 Bucket After Deletion
 
-## 📸 S3 Bucket After Deletion
-![After](screenshots/after.png)
+Result
+
+The AWS Lambda function successfully deleted files older than the defined threshold while keeping recent files intact.
+
+Conclusion
+
+This assignment demonstrates how AWS Lambda and Boto3 can be used to automate cloud storage maintenance tasks efficiently. Automating file cleanup reduces manual effort and ensures efficient S3 bucket management.
