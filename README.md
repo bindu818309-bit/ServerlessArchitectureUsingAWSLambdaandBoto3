@@ -534,7 +534,8 @@ New Value:
 }
 📸 Screenshots
 🔹 DynamoDBTable
-![image_alt](https://github.com/bindu818309-bit/ServerlessArchitectureUsingAWSLambdaandBoto3/blob/ec2fc8948ca4b9768e1b5d0edc5c41ba3ab0274d/screenshots/DynamoDBTableBefore.png)
+<img width="1862" height="1048" alt="image" src="https://github.com/user-attachments/assets/eb03624f-086f-4cdf-9340-6265ab14c395" />
+
 
 🔹 Lambda Function
 
