@@ -388,3 +388,187 @@ This assignment demonstrates:
 Event-driven automation using AWS EventBridge
 Serverless execution using AWS Lambda
 Automated resource tagging using Boto3
+
+
+
+
+
+
+
+
+
+📘 Assignment 7: DynamoDB Item Change Alert Using AWS Lambda, Boto3, and SNS
+🎯 Objective
+
+Automate alerts whenever an item in a DynamoDB table is updated using AWS Lambda and SNS.
+
+🛠️ Services Used
+AWS DynamoDB
+AWS Lambda
+AWS SNS (Simple Notification Service)
+AWS IAM
+Boto3 (Python SDK for AWS)
+🏗️ Architecture Diagram
+DynamoDB Table
+     │
+     │ (Stream Enabled: New & Old Images)
+     ▼
+DynamoDB Stream
+     │
+     ▼
+AWS Lambda Function
+     │
+     ▼
+SNS Topic
+     │
+     ▼
+Email Notification 📩
+📌 Implementation Steps
+1️⃣ DynamoDB Setup
+Navigate to DynamoDB Dashboard
+Click Create Table
+Configure:
+Table Name: MyTable
+Primary Key: id (String)
+Click Create Table
+➕ Add Sample Item
+{
+  "id": "1",
+  "name": "Item1",
+  "status": "active"
+}
+2️⃣ SNS Setup
+Go to SNS Dashboard
+Click Create Topic
+Type: Standard
+Name: DynamoDBAlerts
+Create Subscription:
+Protocol: Email
+Endpoint: your-email@example.com
+Confirm subscription via email
+3️⃣ IAM Role for Lambda
+Go to IAM → Roles → Create Role
+Select Lambda
+Attach Policies:
+AmazonDynamoDBFullAccess
+AmazonSNSFullAccess
+AWSLambdaBasicExecutionRole
+Name the role:
+LambdaDynamoDBSNSRole
+4️⃣ Lambda Function Setup
+Go to Lambda → Create Function
+Choose:
+Runtime: Python 3.x
+Assign IAM Role created earlier
+🧠 Lambda Function Code
+import json
+import boto3
+
+sns = boto3.client('sns')
+
+SNS_TOPIC_ARN = 'arn:aws:sns:ap-south-1:902917582313:DynamoDBAlerts'
+
+def lambda_handler(event, context):
+    print("Received event:", json.dumps(event))
+
+    for record in event['Records']:
+        if record['eventName'] == 'MODIFY':
+            
+            old_image = record['dynamodb'].get('OldImage', {})
+            new_image = record['dynamodb'].get('NewImage', {})
+
+            message = "DynamoDB Item Updated!\n\n"
+            message += "Old Value:\n"
+            message += json.dumps(old_image, indent=2)
+            message += "\n\nNew Value:\n"
+            message += json.dumps(new_image, indent=2)
+
+            response = sns.publish(
+                TopicArn=SNS_TOPIC_ARN,
+                Message=message,
+                Subject="DynamoDB Item Update Alert"
+            )
+
+            print("SNS Notification sent! Message ID:", response['MessageId'])
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Processed DynamoDB update event')
+    }
+5️⃣ Enable DynamoDB Streams
+Open your DynamoDB table
+Go to Exports and Streams
+Enable Stream:
+View Type: New and old images
+6️⃣ Connect Lambda to DynamoDB Stream
+Open Lambda function
+Click Add Trigger
+Select:
+Source: DynamoDB
+Choose your table
+Enable trigger
+7️⃣ Testing
+Go to DynamoDB table
+Update an item:
+{
+  "id": "1",
+  "name": "Item1",
+  "status": "inactive"
+}
+Save changes
+🚀 Expected Output
+Lambda is triggered automatically
+SNS sends an email notification
+Email contains old and new values
+🧪 Sample SNS Notification
+DynamoDB Item Updated!
+
+Old Value:
+{
+  "status": "inactive"
+}
+
+New Value:
+{
+  "status": "active"
+}
+📸 Screenshots
+🔹 DynamoDBTable
+
+(Add screenshot here)
+
+🔹 Lambda Function
+
+(Add screenshot here)
+
+🔹 SNS Topic & Subscription
+
+(Add screenshot here)
+
+🔹 Email Notification
+
+(Add screenshot here)
+
+🔹 CloudWatch Logs
+
+(Add screenshot here)
+
+❗ Common Issues & Fixes
+🔸 Lambda Not Triggering
+Ensure DynamoDB Streams is enabled
+Check trigger is attached to Lambda
+🔸 No SNS Email
+Confirm email subscription
+Check SNS Topic ARN in code
+🔸 Permission Issues
+Ensure IAM role has:
+DynamoDB access
+SNS publish permissions
+✅ Conclusion
+
+This project demonstrates how to build a real-time alerting system using AWS services. DynamoDB Streams, Lambda, and SNS work together to detect and notify changes automatically.
+
+📎 Author
+
+Bindu Reddy
+
