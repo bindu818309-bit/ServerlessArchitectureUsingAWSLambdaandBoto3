@@ -233,6 +233,158 @@ Result
 
 The AWS Lambda function successfully deleted files older than the defined threshold while keeping recent files intact.
 
+
+
+
+
+
+
+# Assignment 5: Auto-Tagging EC2 Instances on Launch Using AWS Lambda and Boto3
+
+## Objective
+Learn to automate the tagging of EC2 instances as soon as they are launched, ensuring better resource tracking and management.
+
+---
+
+## Architecture Overview
+
+When an EC2 instance is launched:
+1. EventBridge (CloudWatch Events) detects the launch
+2. It triggers AWS Lambda
+3. Lambda uses Boto3 to tag the instance automatically
+
+---
+
+## 1. EC2 Setup
+
+- Verified access to EC2 dashboard
+- Successfully able to launch EC2 instances
+
+📸 Screenshot:
+*(Insert EC2 dashboard / instance launch screenshot here)*
+
+---
+
+## 2. IAM Role Creation
+
+### Steps:
+1. Navigate to IAM Dashboard
+2. Click **Roles → Create Role**
+3. Select **Lambda** as trusted entity
+4. Attach policy:
+   - `AmazonEC2FullAccess`
+5. Name the role:
+
 Conclusion
 
 This assignment demonstrates how AWS Lambda and Boto3 can be used to automate cloud storage maintenance tasks efficiently. Automating file cleanup reduces manual effort and ensures efficient S3 bucket management.
+
+
+LambdaEC2TaggingRole
+
+
+📸 Screenshot:
+*(Insert IAM role creation screenshot here)*
+
+---
+
+## 3. Lambda Function Setup
+
+### Configuration:
+- Runtime: Python 3.x
+- Execution Role: LambdaEC2TaggingRole
+
+📸 Screenshot:
+*(Insert Lambda function creation screenshot here)*
+
+---
+
+## 4. Lambda Function Code (Boto3)
+
+```python
+import boto3
+from datetime import datetime
+
+def lambda_handler(event, context):
+ ec2 = boto3.client('ec2')
+ 
+ try:
+     # Extract instance ID from event
+     instance_id = event['detail']['instance-id']
+     
+     # Get current date
+     current_date = datetime.utcnow().strftime('%Y-%m-%d')
+     
+     # Create tags
+     tags = [
+         {
+             'Key': 'LaunchDate',
+             'Value': current_date
+         },
+         {
+             'Key': 'Environment',
+             'Value': 'AutoTagged'
+         }
+     ]
+     
+     # Apply tags
+     ec2.create_tags(
+         Resources=[instance_id],
+         Tags=tags
+     )
+     
+     print(f"Successfully tagged instance {instance_id}")
+ 
+ except Exception as e:
+     print(f"Error tagging instance: {str(e)}")
+     raise
+
+📸 Screenshot:
+(Insert Lambda code screenshot here)
+
+5. EventBridge Rule Configuration
+Steps:
+Navigate to EventBridge (CloudWatch Events)
+Click Create Rule
+Choose Event Pattern
+Select:
+Service: EC2
+Event Type: EC2 Instance State-change Notification
+State: running
+Event Pattern JSON:
+{
+  "source": ["aws.ec2"],
+  "detail-type": ["EC2 Instance State-change Notification"],
+  "detail": {
+    "state": ["running"]
+  }
+}
+Add Target:
+Select Lambda function created earlier
+
+📸 Screenshot:
+(Insert EventBridge rule screenshot here)
+
+6. Testing
+Steps:
+Launch a new EC2 instance
+Wait for 10–30 seconds
+Navigate to EC2 → Instances → Tags
+Expected Output:
+LaunchDate = Current Date
+Environment = AutoTagged
+
+📸 Screenshot:
+(Insert tagged EC2 instance screenshot here)
+
+Result
+
+The Lambda function successfully tagged EC2 instances automatically upon launch using EventBridge trigger and Boto3.
+
+Conclusion
+
+This assignment demonstrates:
+
+Event-driven automation using AWS EventBridge
+Serverless execution using AWS Lambda
+Automated resource tagging using Boto3
