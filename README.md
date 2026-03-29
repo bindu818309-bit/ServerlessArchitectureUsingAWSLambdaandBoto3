@@ -1,78 +1,55 @@
-# Serverless Architecture Using AWS Lambda and Boto3
+🚀 Serverless Architecture Using AWS Lambda and Boto3
 
----
+This repository contains multiple assignments demonstrating serverless automation using AWS services.
 
-# Assignment 1: Automated Instance Management Using AWS Lambda and Boto3
+📌 Assignment 1: Automated Instance Management Using AWS Lambda and Boto3
+Objective
 
-## Objective
-The objective of this assignment is to gain hands-on experience with **AWS Lambda** and **Boto3** by automating the start and stop operations of **EC2 instances** based on instance tags.
+The objective of this assignment is to gain hands-on experience with AWS Lambda and Boto3 by automating the start and stop operations of EC2 instances based on instance tags.
 
-**Technologies used:**
-- Amazon EC2
-- AWS Lambda
-- IAM (Identity and Access Management)
-- Boto3 (Python SDK for AWS)
-
----
-
-## Architecture Overview
+Technologies used:
+Amazon EC2
+AWS Lambda
+IAM (Identity and Access Management)
+Boto3 (Python SDK for AWS)
+Architecture Overview
 
 Event Trigger → AWS Lambda → Boto3 → EC2 Instance Management
 
 Lambda checks EC2 tags and performs the following:
 
-- Instances tagged **Auto-Stop** → Stop instance  
-- Instances tagged **Auto-Start** → Start instance
+Instances tagged Auto-Stop → Stop instance
+Instances tagged Auto-Start → Start instance
 
----
+Step 1: EC2 Instance Setup
 
-## Step 1: EC2 Instance Setup
+Login to AWS Management Console
+Navigate to EC2 Dashboard
 
-1. Login to AWS Management Console  
-2. Navigate to **EC2 Dashboard**  
-3. Launch two instances with the following configuration:
+Launch two instances with the following configuration:
 
-**Instance Type:** t2.micro
+Instance Type: t2.micro
 
-### Instance 1 Tag
-| Key    | Value     |
-|--------|-----------|
-| Action | Auto-Stop |
+Instance 1 Tag
+Key	Value
+Action	Auto-Stop
+Instance 2 Tag
+Key	Value
+Action	Auto-Start
+Step 2: Create IAM Role for Lambda
 
-### Instance 2 Tag
-| Key    | Value     |
-|--------|-----------|
-| Action | Auto-Start |
+Open IAM Dashboard
+Click Roles → Create Role
+Choose trusted entity: AWS Service → Lambda
+Attach policy: AmazonEC2FullAccess
+Role name: LambdaEC2ManagementRole
 
----
-
-## Step 2: Create IAM Role for Lambda
-
-1. Open IAM Dashboard  
-2. Click **Roles** → **Create Role**  
-3. Choose trusted entity: AWS Service → Lambda  
-4. Attach policy: **AmazonEC2FullAccess**  
-5. Role name: `LambdaEC2ManagementRole`
-
----
-
-## Step 3: Create Lambda Function
-
-1. Navigate to **AWS Lambda** → **Create Function**  
-
-**Configuration:**
-
-| Property       | Value                     |
-|----------------|---------------------------|
-| Function Name  | ec2-auto-manager          |
-| Runtime        | Python 3.x                |
-| Execution Role | LambdaEC2ManagementRole   |
-
----
-
-## Step 4: Lambda Python Code
-
-```python
+Step 3: Create Lambda Function
+Property	Value
+Function Name	ec2-auto-manager
+Runtime	Python 3.x
+Execution Role	LambdaEC2ManagementRole
+Step 4: Lambda Python Code
 import boto3
 
 ec2 = boto3.client('ec2')
@@ -113,7 +90,9 @@ Step 5: Create Test Event
 
 Event Name: TestEvent
 
-Event JSON: {}
+Event JSON:
+
+{}
 
 Click Test to execute the function
 
@@ -129,26 +108,8 @@ Example log output:
 
 Stopped Instances: ['i-123456']
 Started Instances: ['i-789012']
-📸 Screenshots
-EC2 Instances Created
 
-Lambda Function Created
-
-Lambda Test Event
-
-EC2 Instance State Change
-
-CloudWatch Logs
-
-Result
-
-The AWS Lambda function successfully automated EC2 instance management by detecting instance tags and performing start or stop operations accordingly.
-
-Conclusion
-
-This assignment demonstrated how serverless computing using AWS Lambda combined with Boto3 can automate infrastructure management tasks efficiently. Tag-based automation allows better control and reduces manual intervention in cloud environments.
-
-Assignment 2: Automated S3 Bucket Cleanup Using AWS Lambda and Boto3
+📌 Assignment 2: Automated S3 Bucket Cleanup Using AWS Lambda and Boto3
 📌 Objective
 
 The objective of this assignment is to automate the deletion of files older than 30 days in an Amazon S3 bucket using AWS Lambda and Boto3.
@@ -160,12 +121,9 @@ An S3 bucket named my-cleanup-bucket-hero was created.
 Multiple files were uploaded into the bucket, including:
 
 Python files (.py)
-
 Text files (.txt)
 
 Some files were used to simulate older data for testing the cleanup process.
-
-📸 Before Deletion
 
 🔐 IAM Role Configuration
 
@@ -178,10 +136,7 @@ Permissions Policy: AmazonS3FullAccess
 This role allows the Lambda function to:
 
 List objects in the S3 bucket
-
 Delete objects from the bucket
-
-📸 IAM Role
 
 ⚙️ Lambda Function Implementation
 
@@ -225,83 +180,58 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': f"Deleted {len(deleted_files)} files"
     }
-📸 Lambda Logs
-
-📸 S3 Bucket After Deletion
-
 Result
 
 The AWS Lambda function successfully deleted files older than the defined threshold while keeping recent files intact.
 
+📌 Assignment 3: DynamoDB Item Change Alert Using AWS Lambda, Boto3, and SNS
+Objective
 
+Automate the process to receive an alert whenever an item in a DynamoDB table gets updated.
 
+Architecture
 
+DynamoDB → Streams → Lambda → SNS → Email Alert
 
+Sample Item
+{
+  "id": "2",
+  "name": "Item2",
+  "status": "inactive"
+}
+Lambda Code
+import json
+import boto3
 
+sns = boto3.client('sns')
 
-# Assignment 5: Auto-Tagging EC2 Instances on Launch Using AWS Lambda and Boto3
+def lambda_handler(event, context):
+    for record in event['Records']:
+        if record['eventName'] == 'MODIFY':
+            message = "DynamoDB item modified"
+            
+            sns.publish(
+                TopicArn='YOUR_SNS_TOPIC_ARN',
+                Message=message,
+                Subject='DynamoDB Alert'
+            )
+Result
 
-## Objective
+Notification is sent whenever a DynamoDB item is updated.
+
+📌 Assignment 4: Auto-Tagging EC2 Instances on Launch Using AWS Lambda and Boto3
+Objective
+
 Learn to automate the tagging of EC2 instances as soon as they are launched, ensuring better resource tracking and management.
 
----
-
-## Architecture Overview
+Architecture Overview
 
 When an EC2 instance is launched:
-1. EventBridge (CloudWatch Events) detects the launch
-2. It triggers AWS Lambda
-3. Lambda uses Boto3 to tag the instance automatically
 
----
-
-## 1. EC2 Setup
-
-- Verified access to EC2 dashboard
-- Successfully able to launch EC2 instances
-
-📸 Screenshot:
-*(Insert EC2 dashboard / instance launch screenshot here)*
-
----
-
-## 2. IAM Role Creation
-
-### Steps:
-1. Navigate to IAM Dashboard
-2. Click **Roles → Create Role**
-3. Select **Lambda** as trusted entity
-4. Attach policy:
-   - `AmazonEC2FullAccess`
-5. Name the role:
-
-Conclusion
-
-This assignment demonstrates how AWS Lambda and Boto3 can be used to automate cloud storage maintenance tasks efficiently. Automating file cleanup reduces manual effort and ensures efficient S3 bucket management.
-
-
-LambdaEC2TaggingRole
-
-
-📸 Screenshot:
-*(Insert IAM role creation screenshot here)*
-
----
-
-## 3. Lambda Function Setup
-
-### Configuration:
-- Runtime: Python 3.x
-- Execution Role: LambdaEC2TaggingRole
-
-📸 Screenshot:
-*(Insert Lambda function creation screenshot here)*
-
----
-
-## 4. Lambda Function Code (Boto3)
-
-```python
+EventBridge (CloudWatch Events) detects the launch
+It triggers AWS Lambda
+Lambda uses Boto3 to tag the instance automatically
+Lambda Function Code (Boto3)
 import boto3
 from datetime import datetime
 
@@ -338,236 +268,6 @@ def lambda_handler(event, context):
  except Exception as e:
      print(f"Error tagging instance: {str(e)}")
      raise
-
-📸 Screenshot:
-(Insert Lambda code screenshot here)
-
-5. EventBridge Rule Configuration
-Steps:
-Navigate to EventBridge (CloudWatch Events)
-Click Create Rule
-Choose Event Pattern
-Select:
-Service: EC2
-Event Type: EC2 Instance State-change Notification
-State: running
-Event Pattern JSON:
-{
-  "source": ["aws.ec2"],
-  "detail-type": ["EC2 Instance State-change Notification"],
-  "detail": {
-    "state": ["running"]
-  }
-}
-Add Target:
-Select Lambda function created earlier
-
-📸 Screenshot:
-(Insert EventBridge rule screenshot here)
-
-6. Testing
-Steps:
-Launch a new EC2 instance
-Wait for 10–30 seconds
-Navigate to EC2 → Instances → Tags
-Expected Output:
-LaunchDate = Current Date
-Environment = AutoTagged
-
-📸 Screenshot:
-(Insert tagged EC2 instance screenshot here)
-
 Result
 
 The Lambda function successfully tagged EC2 instances automatically upon launch using EventBridge trigger and Boto3.
-
-Conclusion
-
-This assignment demonstrates:
-
-Event-driven automation using AWS EventBridge
-Serverless execution using AWS Lambda
-Automated resource tagging using Boto3
-
-
-
-
-
-
-
-
-
-📘 Assignment 7: DynamoDB Item Change Alert Using AWS Lambda, Boto3, and SNS
-🎯 Objective
-
-Automate alerts whenever an item in a DynamoDB table is updated using AWS Lambda and SNS.
-
-🛠️ Services Used
-AWS DynamoDB
-AWS Lambda
-AWS SNS (Simple Notification Service)
-AWS IAM
-Boto3 (Python SDK for AWS)
-🏗️ Architecture Diagram
-DynamoDB Table
-     │
-     │ (Stream Enabled: New & Old Images)
-     ▼
-DynamoDB Stream
-     │
-     ▼
-AWS Lambda Function
-     │
-     ▼
-SNS Topic
-     │
-     ▼
-Email Notification 📩
-📌 Implementation Steps
-1️⃣ DynamoDB Setup
-Navigate to DynamoDB Dashboard
-Click Create Table
-Configure:
-Table Name: MyTable
-Primary Key: id (String)
-Click Create Table
-➕ Add Sample Item
-{
-  "id": "1",
-  "name": "Item1",
-  "status": "active"
-}
-2️⃣ SNS Setup
-Go to SNS Dashboard
-Click Create Topic
-Type: Standard
-Name: DynamoDBAlerts
-Create Subscription:
-Protocol: Email
-Endpoint: your-email@example.com
-Confirm subscription via email
-3️⃣ IAM Role for Lambda
-Go to IAM → Roles → Create Role
-Select Lambda
-Attach Policies:
-AmazonDynamoDBFullAccess
-AmazonSNSFullAccess
-AWSLambdaBasicExecutionRole
-Name the role:
-LambdaDynamoDBSNSRole
-4️⃣ Lambda Function Setup
-Go to Lambda → Create Function
-Choose:
-Runtime: Python 3.x
-Assign IAM Role created earlier
-🧠 Lambda Function Code
-import json
-import boto3
-
-sns = boto3.client('sns')
-
-SNS_TOPIC_ARN = 'arn:aws:sns:ap-south-1:902917582313:DynamoDBAlerts'
-
-def lambda_handler(event, context):
-    print("Received event:", json.dumps(event))
-
-    for record in event['Records']:
-        if record['eventName'] == 'MODIFY':
-            
-            old_image = record['dynamodb'].get('OldImage', {})
-            new_image = record['dynamodb'].get('NewImage', {})
-
-            message = "DynamoDB Item Updated!\n\n"
-            message += "Old Value:\n"
-            message += json.dumps(old_image, indent=2)
-            message += "\n\nNew Value:\n"
-            message += json.dumps(new_image, indent=2)
-
-            response = sns.publish(
-                TopicArn=SNS_TOPIC_ARN,
-                Message=message,
-                Subject="DynamoDB Item Update Alert"
-            )
-
-            print("SNS Notification sent! Message ID:", response['MessageId'])
-
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Processed DynamoDB update event')
-    }
-5️⃣ Enable DynamoDB Streams
-Open your DynamoDB table
-Go to Exports and Streams
-Enable Stream:
-View Type: New and old images
-6️⃣ Connect Lambda to DynamoDB Stream
-Open Lambda function
-Click Add Trigger
-Select:
-Source: DynamoDB
-Choose your table
-Enable trigger
-7️⃣ Testing
-Go to DynamoDB table
-Update an item:
-{
-  "id": "2",
-  "name": "Item2",
-  "status": "active"
-}
-Save changes
-🚀 Expected Output
-Lambda is triggered automatically
-SNS sends an email notification
-Email contains old and new values
-🧪 Sample SNS Notification
-DynamoDB Item Updated!
-
-Old Value:
-{
-  "status": "inactive"
-}
-
-New Value:
-{
-  "status": "active"
-}
-📸 Screenshots
-🔹 DynamoDBTable
-![image alt](https://github.com/bindu818309-bit/ServerlessArchitectureUsingAWSLambdaandBoto3/blob/0ed598d320bf4d5af917b84a415f8c7d0498cee0/screenshots/DynamoDBTableBefore.png)
-
-🔹 Lambda Function
-
-(Add screenshot here)
-
-🔹 SNS Topic & Subscription
-
-(Add screenshot here)
-
-🔹 Email Notification
-
-(Add screenshot here)
-
-🔹 CloudWatch Logs
-
-(Add screenshot here)
-
-❗ Common Issues & Fixes
-🔸 Lambda Not Triggering
-Ensure DynamoDB Streams is enabled
-Check trigger is attached to Lambda
-🔸 No SNS Email
-Confirm email subscription
-Check SNS Topic ARN in code
-🔸 Permission Issues
-Ensure IAM role has:
-DynamoDB access
-SNS publish permissions
-✅ Conclusion
-
-This project demonstrates how to build a real-time alerting system using AWS services. DynamoDB Streams, Lambda, and SNS work together to detect and notify changes automatically.
-
-📎 Author
-
-Bindu Reddy
-
