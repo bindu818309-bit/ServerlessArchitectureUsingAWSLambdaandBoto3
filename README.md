@@ -511,9 +511,9 @@ Enable trigger
 Go to DynamoDB table
 Update an item:
 {
-  "id": "1",
-  "name": "Item1",
-  "status": "inactive"
+  "id": "2",
+  "name": "Item2",
+  "status": "active"
 }
 Save changes
 🚀 Expected Output
@@ -534,8 +534,7 @@ New Value:
 }
 📸 Screenshots
 🔹 DynamoDBTable
-<img width="1862" height="1048" alt="image" src="https://github.com/user-attachments/assets/eb03624f-086f-4cdf-9340-6265ab14c395" />
-
+![image alt](https://github.com/bindu818309-bit/ServerlessArchitectureUsingAWSLambdaandBoto3/blob/0ed598d320bf4d5af917b84a415f8c7d0498cee0/screenshots/DynamoDBTableBefore.png)
 
 🔹 Lambda Function
 
