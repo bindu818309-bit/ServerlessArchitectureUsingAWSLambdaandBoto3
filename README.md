@@ -340,6 +340,13 @@ def lambda_handler(event, context):
     except Exception as e:
         print(f"Error tagging instance: {str(e)}")
         raise
+
+## Auto-Tagging EC2 Instances
+
+![Step 1](screenshots/EC2AutoTaging/EC2machineScreenshotBeforeTagging.png)
+![Step 2](screenshots/EC2AutoTaging/EC2TaggingRole.png)
+![Step 3](screenshots/EC2AutoTaging/EventBridgeRuleforEc2Tagging.png)
+![Step 4](screenshots/EC2AutoTaging/Ec2AutoTaggingTrigger.png)
 Result
 
 The Lambda function successfully tagged EC2 instances automatically upon launch using EventBridge trigger and Boto3.
