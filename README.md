@@ -211,6 +211,15 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': f"Deleted {len(deleted_files)} files"
     }
+
+## Automated S3 Bucket Cleanup
+
+![Step 1](screenshots/AutomatedS3bucketCleanup/beforeCleanup.png)
+![Step 2](screenshots/AutomatedS3bucketCleanup/iam-role.png)
+![Step 3](screenshots/AutomatedS3bucketCleanup/lambda-logs.png)
+![Step 3](screenshots/AutomatedS3bucketCleanup/after.png)
+
+
 Result
 
 The AWS Lambda function successfully deleted files older than the defined threshold while keeping recent files intact.
