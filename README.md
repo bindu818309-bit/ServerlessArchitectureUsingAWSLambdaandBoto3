@@ -274,6 +274,17 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': json.dumps('Processed DynamoDB update event')
     }
+## DynamoDB Item Change Alert
+
+![Step 1](screenshots/DynamoDBItemChangeAlert/mytable.png)
+![Step 2](screenshots/DynamoDBItemChangeAlert/DynamoDBTableBefore.png)
+![Step 3](screenshots/DynamoDBItemChangeAlert/DynamoDbLamdaTrigger.png)
+![Step 4](screenshots/DynamoDBItemChangeAlert/DynamodbSNSRole.png)
+![Step 5](screenshots/DynamoDBItemChangeAlert/DynamodbTrigger.png)
+![Step 6](screenshots/DynamoDBItemChangeAlert/SNS_Subriction.png)
+![Step 7](screenshots/DynamoDBItemChangeAlert/DynamodbTable%20afterUpdate.png)
+![Step 9](screenshots/DynamoDBItemChangeAlert/Email_Notification.png)
+
 Result
 
 Notification is sent whenever a DynamoDB item is updated.
