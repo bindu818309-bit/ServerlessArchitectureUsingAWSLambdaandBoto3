@@ -121,6 +121,16 @@ Example log output:
 Stopped Instances: ['i-123456']
 Started Instances: ['i-789012']
 
+### Setup
+![Setup](screenshots/AutomatedInstanceManagement/ec2-instances-new.png)
+
+### Lambda Function
+![Lambda](screenshots/AutomatedInstanceManagement/lambda-code.png)
+
+### Output
+![Output](screenshots/AutomatedInstanceManagement/ec2-result.png)
+
+
 📌 Assignment 2: Automated S3 Bucket Cleanup Using AWS Lambda and Boto3
 📌 Objective
 
