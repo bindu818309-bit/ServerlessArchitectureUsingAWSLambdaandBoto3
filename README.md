@@ -56,8 +56,14 @@ ec2 = boto3.client('ec2')
 
 def lambda_handler(event, context):
 
+    # Find Auto-Stop instances
     stop_instances = ec2.describe_instances(
-        Filters=[{'Name': 'tag:Action','Values': ['Auto-Stop']}]
+        Filters=[
+            {
+                'Name': 'tag:Action',
+                'Values': ['Auto-Stop']
+            }
+        ]
     )
 
     stop_ids = []
@@ -69,8 +75,14 @@ def lambda_handler(event, context):
         ec2.stop_instances(InstanceIds=stop_ids)
         print("Stopped Instances:", stop_ids)
 
+    # Find Auto-Start instances
     start_instances = ec2.describe_instances(
-        Filters=[{'Name': 'tag:Action','Values': ['Auto-Start']}]
+        Filters=[
+            {
+                'Name': 'tag:Action',
+                'Values': ['Auto-Start']
+            }
+        ]
     )
 
     start_ids = []
@@ -214,16 +226,35 @@ import boto3
 
 sns = boto3.client('sns')
 
+SNS_TOPIC_ARN = 'arn:aws:sns:ap-south-1:902917582313:DynamoDBAlerts'
+
 def lambda_handler(event, context):
+    print("Received event:", json.dumps(event))
+
     for record in event['Records']:
         if record['eventName'] == 'MODIFY':
-            message = "DynamoDB item modified"
             
-            sns.publish(
-                TopicArn='YOUR_SNS_TOPIC_ARN',
+            old_image = record['dynamodb'].get('OldImage', {})
+            new_image = record['dynamodb'].get('NewImage', {})
+
+            message = "DynamoDB Item Updated!\n\n"
+            message += "Old Value:\n"
+            message += json.dumps(old_image, indent=2)
+            message += "\n\nNew Value:\n"
+            message += json.dumps(new_image, indent=2)
+
+            response = sns.publish(
+                TopicArn=SNS_TOPIC_ARN,
                 Message=message,
-                Subject='DynamoDB Alert'
+                Subject="DynamoDB Item Update Alert"
             )
+
+            print("SNS Notification sent! Message ID:", response['MessageId'])
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Processed DynamoDB update event')
+    }
 Result
 
 Notification is sent whenever a DynamoDB item is updated.
@@ -243,40 +274,42 @@ Lambda uses Boto3 to tag the instance automatically
 Lambda Function Code (Boto3)
 import boto3
 from datetime import datetime
+ import boto3
+import datetime
+
+ec2 = boto3.client('ec2')
 
 def lambda_handler(event, context):
- ec2 = boto3.client('ec2')
- 
- try:
-     # Extract instance ID from event
-     instance_id = event['detail']['instance-id']
-     
-     # Get current date
-     current_date = datetime.utcnow().strftime('%Y-%m-%d')
-     
-     # Create tags
-     tags = [
-         {
-             'Key': 'LaunchDate',
-             'Value': current_date
-         },
-         {
-             'Key': 'Environment',
-             'Value': 'AutoTagged'
-         }
-     ]
-     
-     # Apply tags
-     ec2.create_tags(
-         Resources=[instance_id],
-         Tags=tags
-     )
-     
-     print(f"Successfully tagged instance {instance_id}")
- 
- except Exception as e:
-     print(f"Error tagging instance: {str(e)}")
-     raise
+    try:
+        # Extract instance ID from event
+        instance_id = event['detail']['instance-id']
+        
+        # Get current date
+        current_date = datetime.datetime.utcnow().strftime('%Y-%m-%d')
+        
+        # Create tags
+        tags = [
+            {
+                'Key': 'LaunchDate',
+                'Value': current_date
+            },
+            {
+                'Key': 'Owner',
+                'Value': 'AutoTagged'
+            }
+        ]
+        
+        # Apply tags to the instance
+        ec2.create_tags(
+            Resources=[instance_id],
+            Tags=tags
+        )
+        
+        print(f"Successfully tagged instance {instance_id} with {tags}")
+        
+    except Exception as e:
+        print(f"Error tagging instance: {str(e)}")
+        raise
 Result
 
 The Lambda function successfully tagged EC2 instances automatically upon launch using EventBridge trigger and Boto3.
