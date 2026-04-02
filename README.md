@@ -151,6 +151,14 @@ s3 = boto3.client('s3')
 BUCKET_NAME = 'my-cleanup-bucket-hero'
 DAYS_OLD = 2  # Adjusted for testing
 
+import boto3
+from datetime import datetime, timezone, timedelta
+
+s3 = boto3.client('s3')
+
+BUCKET_NAME = 'my-cleanup-bucket-hero'
+DAYS_OLD = 2   # changed for testing
+
 def lambda_handler(event, context):
     cutoff_date = datetime.now(timezone.utc) - timedelta(days=DAYS_OLD)
 
@@ -165,6 +173,7 @@ def lambda_handler(event, context):
     for obj in response['Contents']:
         file_name = obj['Key']
         last_modified = obj['LastModified']
+        print(f"File: {file_name}, Last Modified: {last_modified}")
 
         if last_modified < cutoff_date:
             s3.delete_object(Bucket=BUCKET_NAME, Key=file_name)
